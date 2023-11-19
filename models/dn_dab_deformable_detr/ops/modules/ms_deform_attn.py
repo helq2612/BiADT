@@ -135,16 +135,13 @@ class MSDeformAttn(nn.Module):
 
         # step 2: top branch 
         # step 2.1 top branch val
-        # top_val = torch.cat((input_flatten[..., :self.unit_dim*2], self.top_grl(input_flatten[..., self.unit_dim*2:])), dim=-1)
         top_val = input_flatten[..., :self.unit_dim*2]
-        # value = self.value_proj(input_flatten[..., :self.unit_dim*2])
         top_val = self.value_proj(top_val)
         if input_padding_mask is not None:
             top_val = top_val.masked_fill(input_padding_mask[..., None], float(0))
         top_val = top_val.view(N, Len_in, self.n_heads, self.unit_dim*3 // self.n_heads)
 
         # step 2.2 top branch query
-        # top_query = torch.cat((query[..., :self.unit_dim*2], self.top_grl2(query[..., self.unit_dim*2:])), dim=-1)
         top_query = query[..., :self.unit_dim*2]
         attention_weights = self.attention_weights(top_query).view(N, Len_q, self.n_heads, self.n_levels * self.n_points)
         attention_weights_softmaxed = F.softmax(attention_weights, -1).view(N, Len_q, self.n_heads, self.n_levels, self.n_points)
@@ -165,13 +162,10 @@ class MSDeformAttn(nn.Module):
 
         # step 3.2 bot branch query
         bot_query = torch.cat((self.bot_grl2(query[..., :self.unit_dim*2]), query[..., self.unit_dim*2:]), dim=-1)
-        # bot_query = query_with_grl
-        # bot_query = query[..., self.unit_dim*2:]
         attention_weights_zd = self.attention_weights_zd(bot_query).view(N, Len_q, self.n_heads, self.n_levels * self.n_points)
         attention_weights_zd_softmaxed = F.softmax(attention_weights_zd, -1).view(N, Len_q, self.n_heads, self.n_levels, self.n_points)
 
         # step 3.3 bot branch results
-
         bot_output = MSDeformAttnFunction.apply(
             bot_val, input_spatial_shapes, input_level_start_index, sampling_locations, attention_weights_zd_softmaxed, self.im2col_step)
         bot_output = self.output_proj_zd(bot_output)

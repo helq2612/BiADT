@@ -8,7 +8,6 @@ import torch
 from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
                        accuracy, get_world_size, interpolate,
                        is_dist_avail_and_initialized, inverse_sigmoid)
-# from .DABDETR import sigmoid_focal_loss
 from util import box_ops
 import torch.nn.functional as F
 
@@ -80,10 +79,7 @@ def prepare_for_dn(dn_args, tgt_weight, embedweight, batch_size, training, num_q
         know_idx = [torch.nonzero(t) for t in known]
         known_num = [sum(k) for k in known]
         # you can uncomment this to use fix number of dn queries
-        # if int(max(known_num))>0:
-        #     scalar=scalar//int(max(known_num))
 
-        # can be modified to selectively denosie some label or boxes; also known label prediction
         unmask_bbox = unmask_label = torch.cat(known)
         labels = torch.cat([t['labels'] for t in targets])
         boxes = torch.cat([t['boxes'] for t in targets])
@@ -103,18 +99,11 @@ def prepare_for_dn(dn_args, tgt_weight, embedweight, batch_size, training, num_q
         # noise on the label
         if label_noise_scale > 0:
             p = torch.rand_like(known_labels_expaned.float())
-            # print("1====> p = {}".format(p))
 
             chosen_indice = torch.nonzero(p < (label_noise_scale)).view(-1)  # usually half of bbox noise
-            # print("2====>chosen_indice = {}".format(chosen_indice))
             
             new_label = torch.randint_like(chosen_indice, 0, num_classes).long()  # randomly put a new one here
-            # print("3====>new_label = {}".format(new_label))
 
-            # print("4====> data type known_labels_expaned.dtype = {}, new_label.dtype = {} ".format(known_labels_expaned.dtype, new_label.dtype))
-            # print("5====> data type known_labels_expaned.shape = {}, new_label.shape = {} ".format(known_labels_expaned.shape, new_label.shape))
-            # exit(0)
-            # known_labels_expaned = known_labels_expaned.long()
             known_labels_expaned.scatter_(0, chosen_indice, new_label)
         # noise on the box
         if box_noise_scale > 0:
@@ -174,8 +163,6 @@ def prepare_for_dn(dn_args, tgt_weight, embedweight, batch_size, training, num_q
         attn_mask = None
         mask_dict = None
 
-    # input_query_label = input_query_label.transpose(0, 1)
-    # input_query_bbox = input_query_bbox.transpose(0, 1)
 
     return input_query_label, input_query_bbox, attn_mask, mask_dict
 

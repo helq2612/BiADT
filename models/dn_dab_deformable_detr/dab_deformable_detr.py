@@ -35,7 +35,6 @@ from .deformable_transformer import build_deforamble_transformer
 import copy
 
 from .dn_components import prepare_for_dn, dn_post_process, compute_dn_loss
-from .gt_box_mask import gt_box_mask_generate
 from .grl import GradientReversal
 from torchmetrics.classification import BinaryHingeLoss
 
