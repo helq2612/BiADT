@@ -21,7 +21,7 @@ We propose a Bidirectional Alignment for domain adaptive Detection with Transfor
 ## Model Weights
 We provide the model weights for C2FC domain shift. The model weights for BIADT w/o and w/ AQT can be found here: [c2fc_biadt.pth](https://drive.google.com/file/d/1XsItqdHkoO0zAcdXkZWQwEcnXp-avop-/view?usp=drive_link) (AP=49.6) and [c2fc_aqt_biadt.pth](https://drive.google.com/file/d/1Fl4Kzkto6CN8xPyEdDzNmKyHj7LkHqJg/view?usp=drive_link)(AP=50.1).
 
-For the inference, see test.sh and test2.sh. For training, see train.sh.
+For the inference, see test.sh and test_aqt.sh. For training, see train.sh.
 
 ## Links
 Our work is based on **DAB-DETR** (DN-DETR version) and **AQT**. We sincerely appreciate their great work! 
